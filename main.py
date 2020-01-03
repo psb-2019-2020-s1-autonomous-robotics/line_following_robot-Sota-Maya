@@ -10,24 +10,31 @@ from pybricks.robotics import DriveBase
 
 
 brick.sound.beep()
-
-front_motor = Motor(Port.A)
-motorB = Motor(Port.B)
+#Sets up sensor and motors
+moving_motor = Motor(Port.A)
+rotating_motor = Motor(Port.B)
 color_sensor = ColorSensor(Port.S1)
-deciding_value = 40
+
+while Button.LEFT not in brick.buttons():
+    wait(1)
+white = color_sensor.reflection()
+brick.sound.beep()
+while Button.RIGHT not in brick.buttons():
+    wait(1)
+black = color_sensor.reflection()
+brick.sound.beep()
+deciding_value = (white + black)/2
 while True:
-    if color_sensor.reflection() < deciding_value:
-        brick.display.text("Sensed line")
-        motorB.reset_angle(0)
-        motorB.run_target(500, -90)
-    else:
-        brick.display.text("Nothing sensed, searching.")
-        a = 5
+    if color_sensor.reflection() < deciding_value: #Checks to see if the robot is on line
+        brick.display.text("%s Sensed line" % color_sensor.reflection())
+        moving_motor.reset_angle(0)
+        moving_motor.run_target(500, -90) #Moves robot forward
+    else: 
+        brick.display.text("%s Nothing sensed, searching." % color_sensor.reflection())
+        incrament = 2
+        a = incrament
         b = 1
         while color_sensor.reflection() > deciding_value:
-            front_motor.run_target(500,a*b)
-            a = a + 2.5
+            rotating_motor.run_target(500,a*b)
+            a = a + incrament
             b = - b
-        front_motor.run_target(500,0) 
-    #brick.display.clear()
-    #brick.sound.beep()
